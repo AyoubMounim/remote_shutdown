@@ -120,10 +120,6 @@ while [[ -n "$1" ]]; do
             print_help
             graceful_exit
             ;;
-        -a|--all)
-            ALL=1
-            break
-            ;;
         -n|--host-number)
             shift
             HOST_NUMBER="$1"
