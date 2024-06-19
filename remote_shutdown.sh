@@ -98,6 +98,11 @@ function shutdown_host(){
     local host_name=${HOSTS[$(( $host_number+$HOST_NAME ))]}
     local host_addr=${HOSTS[$(( $host_number+$HOST_ADDR ))]}
     echo "Shutting down $host_name@$host_addr..."
+    ssh "$host_name@$host_addr" 2> /dev/null
+    if [[ $? -ne 0 ]]; then
+        echo "error"
+        return 1
+    fi
     echo "ok"
     return 0
 }
