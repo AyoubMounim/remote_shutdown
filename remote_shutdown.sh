@@ -89,13 +89,13 @@ function parse_hosts(){
 
 function shutdown_host(){
     local host_number="$1"
-    host_number=$(( $host_number*3 ))
+    host_number=$(( ($host_number-1)*3 ))
     if [[ $host_number -ge ${#HOSTS[@]} ]]; then
         echo "ERROR: invalid host number $(( host_number/3 ))"
         return 1
     fi
     if [[ $host_number -lt 0 ]]; then
-        echo "ERROR: negative host number"
+        echo "ERROR: invalid host number 0"
         return 1
     fi
     local host_name=${HOSTS[$(( $host_number+$HOST_NAME ))]}
@@ -180,7 +180,7 @@ if [[ $ALL -eq 1 ]]; then
     n=$(( ${#HOSTS[@]}/3 ))
     confirm=$(ask_confirmation "Shutting down $n hosts. Confirm? [Y/n]")
     [[ $confirm -eq 0 ]] && graceful_exit
-    for i in $(seq 0 $(( $n-1 ))); do
+    for i in $(seq 1 $n); do
         shutdown_host $i
     done
 else
