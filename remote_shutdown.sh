@@ -4,12 +4,14 @@ PROGNAME=${0##*/}
 VERSION="0.1"
 LIBS=()  # Paths to external libraries.
 
-HOSTS=()
-ALL=1
-
 HOST_NAME=0
 HOST_ADDR=1
 HOST_PWR=2
+
+HOSTS=()
+ALL=1
+VERBOSE=0
+
 
 function set_up(){
     parse_hosts
@@ -87,8 +89,9 @@ function parse_hosts(){
 
 function shutdown_host(){
     local host_number="$1"
+    host_number=$(( $host_number*3 ))
     if [[ $host_number -ge ${#HOSTS[@]} ]]; then
-        echo "ERROR: invalid host number $host_number"
+        echo "ERROR: invalid host number $(( host_number/3 ))"
         return 1
     fi
     if [[ $host_number -lt 0 ]]; then
@@ -98,13 +101,43 @@ function shutdown_host(){
     local host_name=${HOSTS[$(( $host_number+$HOST_NAME ))]}
     local host_addr=${HOSTS[$(( $host_number+$HOST_ADDR ))]}
     echo "Shutting down $host_name@$host_addr..."
-    ssh "$host_name@$host_addr" 2> /dev/null
+    if [[ $VERBOSE -eq 1 ]]; then
+        ssh "$host_name@$host_addr"
+    else
+        ssh "$host_name@$host_addr" 2> /dev/null
+    fi
     if [[ $? -ne 0 ]]; then
         echo "error"
         return 1
     fi
     echo "ok"
     return 0
+}
+
+function ask_confirmation(){
+    local msg="$1"
+    local msg_default="Are you sure? [Y/n]"
+    if [[ -z "$msg" ]]; then
+        msg="$msg_default"
+    fi
+    local answer=""
+    while [[ 1 -eq 1 ]]; do
+        echo "$msg" >&2
+        read answer
+        case "$answer" in
+            y|Y|"")
+                echo 1
+                return 0
+                ;;
+            n|N)
+                echo 0
+                return 0
+                ;;
+            *)
+                echo "Invalid option. Please answer \"y\" or \"n\"." >&2
+                ;;
+        esac
+    done
 }
 
 trap "signal_exit TERM" TERM HUP
@@ -119,6 +152,11 @@ while [[ -n "$1" ]]; do
         -h|--help)
             print_help
             graceful_exit
+            ;;
+        -v|--verbose)
+            shift
+            VERBOSE=1
+            shift
             ;;
         -n|--host-number)
             shift
@@ -140,8 +178,10 @@ done
 
 if [[ $ALL -eq 1 ]]; then
     n=$(( ${#HOSTS[@]}/3 ))
+    confirm=$(ask_confirmation "Shutting down $n hosts. Confirm? [Y/n]")
+    [[ $confirm -eq 0 ]] && graceful_exit
     for i in $(seq 0 $(( $n-1 ))); do
-        shutdown_host $(( 3*i ))
+        shutdown_host $i
     done
 else
     shutdown_host $HOST_NUMBER
