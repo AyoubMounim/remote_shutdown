@@ -8,6 +8,7 @@ HOST_NAME=0
 HOST_ADDR=1
 HOST_PWR=2
 
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 HOSTS=()
 ALL=1
 VERBOSE=0
@@ -80,7 +81,9 @@ EOF
 }
 
 function parse_hosts(){
-    HOSTS=($(cat "./hosts.txt"))
+    local hosts_file="$SCRIPT_DIR/hosts.txt"
+    [[ -f "$hosts_file" ]] || error_exit "[ERROR] Hosts file not found."
+    HOSTS=($(cat "$hosts_file"))
     if [[ ${#HOSTS[@]} -lt 0 ]]; then
         error_exit "ERROR: invalid hosts list."
         graceful_exit

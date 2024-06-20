@@ -7,7 +7,6 @@ while [[ -n "$1" ]]; do
         -i|--install-prefix)
             shift
             PREFIX="$1"
-            shift
             ;;
         -*|--*)
             echo "Unknown option $1"
@@ -21,17 +20,16 @@ while [[ -n "$1" ]]; do
     shift
 done
 
-
-if [[ ! -f "./remote_shutdown.sh" ]]; then
+if [[ ! -f "$(pwd)/remote_shutdown.sh" ]]; then
     echo "Script not found. Run the install script from the project root dir."
     exit 1
 fi
-if [[ ! -d "/usr/local/bin/" ]]; then
+if [[ ! -d "$PREFIX" ]]; then
     echo "Installation directory does not exist."
     exit 1
 fi
 
-ln "./remote_shutdown.sh" "$PREFIX/remote_shutdown"
+ln -s "$(pwd)/remote_shutdown.sh" "$PREFIX/remote_shutdown"
 
 if [[ $? -ne 0 ]]; then
     echo "Install failed."
