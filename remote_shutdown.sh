@@ -11,6 +11,7 @@ HOST_PWR=2
 HOSTS=()
 ALL=1
 VERBOSE=0
+SKIP_CONFIRMS=0
 
 
 function set_up(){
@@ -115,6 +116,10 @@ function shutdown_host(){
 }
 
 function ask_confirmation(){
+    if [[ $SKIP_CONFIRMS -eq 1 ]]; then
+        echo 1
+        return 0
+    fi
     local msg="$1"
     local msg_default="Are you sure? [Y/n]"
     if [[ -z "$msg" ]]; then
@@ -154,15 +159,15 @@ while [[ -n "$1" ]]; do
             graceful_exit
             ;;
         -v|--verbose)
-            shift
             VERBOSE=1
-            shift
+            ;;
+        -y|--skip--confirms)
+            SKIP_CONFIRMS=1
             ;;
         -n|--host-number)
             shift
             HOST_NUMBER="$1"
             ALL=0
-            shift
             ;;
         -*|--*)
             usage >&2
