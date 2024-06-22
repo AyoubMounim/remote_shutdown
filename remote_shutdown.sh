@@ -84,7 +84,7 @@ function parse_hosts(){
     local hosts_file="$SCRIPT_DIR/hosts.txt"
     [[ -f "$hosts_file" ]] || error_exit "[ERROR] Hosts file not found."
     HOSTS=($(cat "$hosts_file"))
-    if [[ ${#HOSTS[@]} -lt 0 ]]; then
+    if [[ $(( ${#HOSTS[@]} % 3 )) -ne 0 ]]; then
         error_exit "ERROR: invalid hosts list."
         graceful_exit
     fi
