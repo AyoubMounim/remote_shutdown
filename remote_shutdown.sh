@@ -8,7 +8,7 @@ HOST_NAME=0
 HOST_ADDR=1
 HOST_PWR=2
 
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+SCRIPT_DIR="$(dirname -- "$(readlink -f -- "$0")")"
 HOSTS=()
 ALL=1
 VERBOSE=0
