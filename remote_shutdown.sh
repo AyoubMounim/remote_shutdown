@@ -189,9 +189,12 @@ if [[ $ALL -eq 1 ]]; then
     n=$(( ${#HOSTS[@]}/3 ))
     confirm=$(ask_confirmation "Shutting down $n hosts. Confirm? [Y/n]")
     [[ $confirm -eq 0 ]] && graceful_exit
+    shutted_down=0
     for i in $(seq 1 $n); do
         shutdown_host $i
+        [[ "$?" -eq 0 ]] && (( shutted_down++ ))
     done
+    echo -e "\nShutted down $shutted_down/$n hosts."
 else
     shutdown_host $HOST_NUMBER
 fi
