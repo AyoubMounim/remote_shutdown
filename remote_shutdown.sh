@@ -104,11 +104,12 @@ function shutdown_host(){
     fi
     local host_name=${HOSTS[$(( $host_number+$HOST_NAME ))]}
     local host_addr=${HOSTS[$(( $host_number+$HOST_ADDR ))]}
+    local host_prw=${HOSTS[$(( $host_number+$HOST_PWR ))]}
     echo "Shutting down $host_name@$host_addr..."
     if [[ $VERBOSE -eq 1 ]]; then
-        ssh "$host_name@$host_addr"
+        sshpass -p $host_prw ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 "$host_name@$host_addr" "echo $host_prw | sudo --prompt="" -S shutdown now"
     else
-        ssh "$host_name@$host_addr" 2> /dev/null
+        sshpass -p $host_prw ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 "$host_name@$host_addr" "echo $host_prw | sudo --prompt="" -S shutdown now" 2> /dev/null
     fi
     if [[ $? -ne 0 ]]; then
         echo "error"
