@@ -29,7 +29,7 @@ if [[ ! -d "$PREFIX" ]]; then
     exit 1
 fi
 
-ln -s "$(pwd)/remote_shutdown.sh" "$PREFIX/remote_shutdown"
+ln -sf "$(pwd)/remote_shutdown.sh" "$PREFIX/remote_shutdown"
 
 if [[ $? -ne 0 ]]; then
     echo "Install failed."
