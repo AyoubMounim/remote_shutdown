@@ -95,7 +95,7 @@ function shutdown_host(){
     local host_number="$1"
     host_number=$(( ($host_number-1)*3 ))
     if [[ $host_number -ge ${#HOSTS[@]} ]]; then
-        echo "ERROR: invalid host number $(( host_number/3 ))"
+        echo "ERROR: invalid host number $(( host_number/3+1 ))"
         return 1
     fi
     if [[ $host_number -lt 0 ]]; then
