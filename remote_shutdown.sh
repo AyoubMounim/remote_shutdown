@@ -166,6 +166,11 @@ load_libs
 
 set_up
 
+if [[ -z "$1" ]]; then
+    usage >&2
+    graceful_exit
+fi
+
 while [[ -n "$1" ]]; do
     case "$1" in
         -h|--help)
@@ -205,8 +210,8 @@ if [[ ! -z "$HOSTS_FILE" ]]; then
     parse_hosts "$HOSTS_FILE"
 fi
 
-if [[ ${HOSTS[@]} -eq 0 ]]; then
-    usage >&2
+if [[ ${#HOSTS[@]} -eq 0 ]]; then
+    echo "List of hosts to shutdown is empty."
     graceful_exit
 fi
 
