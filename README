@@ -1,0 +1,18 @@
+
+The script takes a number of remote hosts as input and attempts to shut them
+down by issuing commands via ssh protocol.
+
+Hosts are specified by the triplet <host_name> <host_ip> <host_password>.
+Hosts triplets can be passed to the script by listing them as command-line
+arguments or in the "hosts.txt" file with the -f flag.
+
+Hosts parsed from the file and the command-line arguments are collected in an
+array and sequentially shutdown.
+
+If the -n <host_number> option is set, only the host with <host_number>
+position in the hosts list will be shutdown.
+
+The "install.sh" scripts simply creates a symbolic link to the main script.
+By default the link is created in the /usr/local/bin/ directory, this can be
+changed by setting the option -i <install_dir>.
+

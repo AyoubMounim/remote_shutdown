@@ -61,8 +61,14 @@ function load_libs(){
 }
 
 function usage(){
-    printf "%s\n" "Usage: $PROGNAME [-h | --help]"
-    printf "       %s\n" "$PROGNAME [options] args"
+    printf "$PROGNAME - shutdown known hosts remotely via ssh protocol.\n\n"
+    printf "%s\n" "Usage: $PROGNAME [-fyv] [-n host_number] [host_name host_ip host_password]"
+    printf "Options:\n"
+    printf "  -f, --hosts-file       parse hosts from \"hosts.txt\" file found in script's directory.\n"
+    printf "  -y, --skip-confirms    don't ask for user confirms.\n"
+    printf "  -v, --verbose          run in verbose mode useful for debugging and troubleshooting.\n"
+    printf "  -n host_number         targets host number <host_number> in the hosts list.\n"
+    printf "  -h, --help             show this help message.\n"
     return 0
 }
 
