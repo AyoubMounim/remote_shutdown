@@ -121,7 +121,7 @@ function shutdown_host(){
     local host_name=${HOSTS[$(( $host_number+$HOST_NAME ))]}
     local host_addr=${HOSTS[$(( $host_number+$HOST_ADDR ))]}
     local host_prw=${HOSTS[$(( $host_number+$HOST_PWR ))]}
-    echo "Shutting down $host_name@$host_addr..."
+    echo "Shutting down $host_name@$host_addr ..."
     if [[ $VERBOSE -eq 1 ]]; then
         sshpass -p $host_prw ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 "$host_name@$host_addr" "echo $host_prw | sudo --prompt="" -S shutdown now"
     else
