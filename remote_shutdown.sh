@@ -9,6 +9,7 @@ HOST_ADDR=1
 HOST_PWR=2
 
 SCRIPT_DIR="$(dirname -- "$(readlink -f -- "$0")")"
+HOSTS_FILE=""
 HOSTS=()
 ALL=1
 VERBOSE=0
@@ -16,7 +17,6 @@ SKIP_CONFIRMS=0
 
 
 function set_up(){
-    parse_hosts
     return 0
 }
 
@@ -80,14 +80,24 @@ EOF
     return 0
 }
 
-function parse_hosts(){
-    local hosts_file="$SCRIPT_DIR/hosts.txt"
-    [[ -f "$hosts_file" ]] || error_exit "[ERROR] Hosts file not found."
-    HOSTS=($(cat "$hosts_file"))
-    if [[ $(( ${#HOSTS[@]} % 3 )) -ne 0 ]]; then
-        error_exit "ERROR: invalid hosts list."
-        graceful_exit
+function hosts_check(){
+    local hosts=("$@")
+    if [[ $(( ${#hosts[@]} % 3 )) -eq 0 ]]; then
+        echo 1
+    else
+        echo 0
     fi
+    return 0
+}
+
+function parse_hosts(){
+    local hosts_file="$1"
+    [[ -f "$hosts_file" ]] || error_exit "[ERROR] Hosts file not found."
+    local new_hosts=($(cat "$hosts_file"))
+    if [[ $(hosts_check "${new_hosts[@]}") -eq 0 ]]; then
+        error_exit "ERROR: invalid hosts list."
+    fi
+    HOSTS+=(${new_hosts[@]})
     return 0
 }
 
@@ -168,6 +178,9 @@ while [[ -n "$1" ]]; do
         -y|--skip--confirms)
             SKIP_CONFIRMS=1
             ;;
+        -f|--hosts-file)
+            HOSTS_FILE="$SCRIPT_DIR/hosts.txt"
+            ;;
         -n|--host-number)
             shift
             HOST_NUMBER="$1"
@@ -178,12 +191,24 @@ while [[ -n "$1" ]]; do
             error_exit "Unknown option $1"
             ;;
         *)
-            usage >&2
-            error_exit "Unknown argument $1"
+            HOSTS+=("$1")
             ;;
     esac
     shift
 done
+
+if [[ $(hosts_check ${HOSTS[@]}) -eq 0 ]]; then
+    error_exit "Invalid number of arguments."
+fi
+
+if [[ ! -z "$HOSTS_FILE" ]]; then
+    parse_hosts "$HOSTS_FILE"
+fi
+
+if [[ ${HOSTS[@]} -eq 0 ]]; then
+    usage >&2
+    graceful_exit
+fi
 
 if [[ $ALL -eq 1 ]]; then
     n=$(( ${#HOSTS[@]}/3 ))
